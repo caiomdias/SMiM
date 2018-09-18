@@ -129,7 +129,7 @@ while True:
 
 
         
-
+ 
 
 # Fecha socket do servidor e cliente
 socket_servidor.close()

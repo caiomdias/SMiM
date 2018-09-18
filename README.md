@@ -1,1 +1,1 @@
-new project
+Simple machine information manager.
