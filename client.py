@@ -44,6 +44,7 @@ try:
         print('-------    3 Percentual deu so de Disco.')
         print('-------    4 Informações da CPU.')
         print('-------    5 IP da maquina.')
+        print('-------    6 Informações sobre um arquivo.')
         print('-------    fim para sair.')
         print('')
         msg = input('>>> ')
@@ -57,7 +58,6 @@ try:
 
         # Retorna porcentagem de memoria
         if msg == '1':
-            response = []
 
            # Envia mensagem vazia apenas para indicar a requisição
             s.send(msg.encode('ascii'))
@@ -66,15 +66,14 @@ try:
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            response = pickle.loads(bytes)
+            res_mem_percent = pickle.loads(bytes)
             
-            print("Porcentagem de memoria usada:", response[0],"%")
+            print("Porcentagem de memoria usada:", res_mem_percent[0],"%")
             print('')
 
 
         # Retorna porcentagem de uso da CPU
         if msg == '2':
-            response = []
 
            # Envia mensagem vazia apenas para indicar a requisição
             s.send(msg.encode('ascii'))
@@ -83,16 +82,14 @@ try:
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            response = pickle.loads(bytes)
+            res_cpu_percent = pickle.loads(bytes)
 
-            formatCpuInfoPercent(response)
+            formatCpuInfoPercent(res_cpu_percent)
             print('')
-            time.sleep(1)
 
 
         # Retorna porcentagem de uso de disco
         if msg == '3':
-            response = []
 
            # Envia mensagem vazia apenas para indicar a requisição
             s.send(msg.encode('ascii'))
@@ -101,16 +98,15 @@ try:
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            response = pickle.loads(bytes)
+            res_disk_percent = pickle.loads(bytes)
             
-            print("Porcentagem de disco usada:", response[0],"%")
+            print("Porcentagem de disco usada:", res_disk_percent[0],"%")
             print('')
 
 
 
         # Retorna informações da CPU
         if msg == '4':
-            response = []
 
             # Envia mensagem vazia apenas para indicar a requisição
             s.send(msg.encode('ascii'))
@@ -119,15 +115,14 @@ try:
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            response = pickle.loads(bytes)
+            res_cpu_info = pickle.loads(bytes)
 
-            formatCpuInfo(response)
+            formatCpuInfo(res_cpu_info)
             print('')
 
 
         # Retorna o ip da maquina
         if msg == '5':
-            response =[]
             
             # Envia mensagem vazia apenas para indicar a requisição
             s.send(msg.encode('ascii'))
@@ -136,9 +131,27 @@ try:
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            response = pickle.loads(bytes)
+            res_ip = pickle.loads(bytes)
             
-            print('Ip da maquina:', response[0])
+            print('Ip da maquina:', res_ip[0])
+            print('')
+
+
+        # Retorna as informações de um arquivo com base no path.
+        if msg == '6':
+            print('Por favor, digite o caminho do arquivo.')
+            print('')
+            path = input('>>> ')
+
+            msg_to_send = msg + ',' + path
+            # Envia mensagem vazia apenas para indicar a requisição
+            s.sendall(msg_to_send.encode('ascii'), )
+
+            # Recebe a resposta do servidor.
+            bytes = s.recv(1024)
+
+            # Converte os bytes para lista
+            res_ip = pickle.loads(bytes)
 
 
 
