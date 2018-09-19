@@ -67,17 +67,18 @@ def sendResponse(res):
         # Envia os dados
         cliente.send(bytes_resp)
 
-    # Gera a lista de resposta
-    resposta = []
-    print(res)
-    # Apenda a resposta para o array de respostas
-    resposta.append(res)
+    else: 
+        # Gera a lista de resposta
+        resposta = []
+        print(res)
+        # Apenda a resposta para o array de respostas
+        resposta.append(res)
 
-    # Prepara a lista para o envio
-    bytes_resp = pickle.dumps(resposta)
+        # Prepara a lista para o envio
+        bytes_resp = pickle.dumps(resposta)
 
-    # Envia os dados
-    cliente.send(bytes_resp)
+        # Envia os dados
+        cliente.send(bytes_resp)
 
 while True:
     res = []
@@ -124,10 +125,15 @@ while True:
     # Ip da maquina
     if msg.decode('ascii') == '5':
         dic_interfaces = ps.net_if_addrs()
+        print(dic_interfaces)
         machine_ip = dic_interfaces['Ethernet'][1].address
         sendResponse(machine_ip)
 
+    if os.path.isfile(msg.decode('ascii')):
+        msg = msg.decode('ascii')
+        print(msg)
 
+    
         
  
 
