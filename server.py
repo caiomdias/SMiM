@@ -107,6 +107,7 @@ while True:
 
         sendResponse(res)
 
+
     # Percentual de uso de Disco
     if msg.decode('ascii') == '3':
         res = []
@@ -127,20 +128,14 @@ while True:
         machine_ip = dic_interfaces['Ethernet'][1].address
         sendResponse(machine_ip)
 
+    # retornar as informações do arquivo
     if msg.decode('ascii') == '6':
-        # dic_interfaces = ps.net_if_addrs()
-        # sendResponse(machine_ip)
-        # espera o path do arquivo
-        # envia um ack ou sei lá
         path = cliente.recv(1024)
         decode_path = path.decode('ascii')
+        list_files = os.listdir(decode_path)
         print(decode_path)
+        sendResponse(list_files)
 
-        # retornar as informações do arquivo
-
-    if os.path.isfile(msg.decode('ascii')):
-        msg = msg.decode('ascii')
-        print(msg)
 
 
 # Fecha socket do servidor e cliente

@@ -7,6 +7,8 @@
 
 import socket
 import pickle
+import os
+import time
 
 GIGAFACTOR = float(1 << 30)
 
@@ -31,6 +33,35 @@ def formatCpuInfo(info):
     print("-------    Numero de nucleos fisicos", info[6])
     print("-------    Numero de nucleos logicos", info[7])
 
+def getFileInformation(path, list_files):
+
+    dic_files = {}
+
+    for i in list_files:
+        if os.path.isfile(i):
+            dic_files[i] = []
+            dic_files[i].append(os.stat(i).st_size)
+            dic_files[i].append(os.stat(i).st_atime)
+            dic_files[i].append(os.stat(i).st_mtime)
+
+    titulo = '{:11}'.format("Tamanho")  # 10 caracteres + 1 de espaço
+
+    # Concatenar com 25 caracteres + 2 de espaços
+    titulo = titulo + '{:27}'.format("Data de Modificação")
+
+    # Concatenar com 25 caracteres + 2 de espaços
+    titulo = titulo + '{:27}'.format("Data de Criação")
+
+    titulo = titulo + "Nome"
+
+    print(titulo)
+
+    for i in dic_files:
+        kb = dic_files[i][0] / 1000
+        tamanho = '{:10}'.format(str('{:.2f}'.format(kb) + ' KB'))
+        print('\n' + tamanho, time.ctime(dic_files[i][2]), " ", time.ctime(dic_files[i][1])," ", i + '\n')
+
+
 
 # Cria o socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,6 +80,7 @@ try:
         print('-------    4 Informações da CPU.')
         print('-------    5 IP da maquina.')
         print('-------    6 Informações sobre um arquivo.')
+        print('-------    7 Informações sobre um diretorio.')
         print('-------    fim para sair.')
         print('')
         msg = input('>>> ')
@@ -138,17 +170,36 @@ try:
         if msg == '6':
             s.send(msg.encode('ascii'))
 
+            # recebe e envia o path para o servidor
             print('Por favor, digite o caminho do arquivo.\n')
             path = input('>>> ')
             s.send(path.encode('ascii'))
-            # Envia mensagem vazia apenas para indicar a requisição
 
             # Recebe a resposta do servidor.
             bytes = s.recv(1024)
 
             # Converte os bytes para lista
-            res_ip = pickle.loads(bytes)
-            print(res_ip)
+            res_files = pickle.loads(bytes)
+
+            getFileInformation(path, res_files)
+
+        
+        # Retorna as informações de um arquivo com base no path.
+        if msg == '7':
+            s.send(msg.encode('ascii'))
+
+            # recebe e envia o path para o servidor
+            print('Por favor, digite o caminho do arquivo.\n')
+            path = input('>>> ')
+            s.send(path.encode('ascii'))
+
+            # Recebe a resposta do servidor.
+            bytes = s.recv(1024)
+
+            # Converte os bytes para lista
+            res_files = pickle.loads(bytes)
+
+            getFileInformation(path, res_files)
 
 
 except Exception as erro:
