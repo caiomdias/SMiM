@@ -55,8 +55,53 @@ def getCpuInfo(info):
     temp.append(ps.cpu_freq().min)
     temp.append(ps.cpu_count(logical=False))
     temp.append(ps.cpu_count() - ps.cpu_count(logical=False))
-    print(temp)
     return temp
+
+
+# Tamanho de um diretorio
+def getDirSize(path):
+
+    ## calcula o tamano de um diretorio
+    if os.path.isdir(path):
+        somador = 0
+
+        lista = os.listdir(path)
+
+        for i in lista:
+            p = os.path.join(path, i)
+            if os.path.isfile(p):
+                somador = somador + os.stat(p).st_size
+        return somador / 1000
+    else:
+        return "O diretório", '\'' + path + '\'', "não existe."
+
+
+# Retorna o pid de um processo com base no nome do mesmo
+def getPIDByName(name):
+
+    lp = ps.pids()
+
+    lista_pid = []
+
+    for i in lp:
+        p = ps.Process(i)
+
+        if p.name() == name:
+            lista_pid.append(str(i))
+
+    if len(lista_pid) > 0:
+        # print("O(s) PID(s) de", name, "são:")
+        # print(', '.join(lista_pid))
+        return lista_pid
+
+    else:
+        return "não está executando no momento."
+
+
+# Retorna os dados de um PID
+def getProcessInformation(pid):
+    return ps.Process(int(pid))
+    
 
 
 def sendResponse(res):
@@ -71,7 +116,7 @@ def sendResponse(res):
     else:
         # Gera a lista de resposta
         resposta = []
-        print(res)
+        
         # Apenda a resposta para o array de respostas
         resposta.append(res)
 
@@ -85,7 +130,7 @@ def sendResponse(res):
 while True:
     res = []
     # Recebe pedido do cliente:
-    msg = cliente.recv(1024)
+    msg = cliente.recv(2048)
 
     print('Connection handled')
 
@@ -135,6 +180,44 @@ while True:
         list_files = os.listdir(decode_path)
         print(decode_path)
         sendResponse(list_files)
+
+    # retornar as informações do arquivo
+    if msg.decode('ascii') == '7':
+        path = cliente.recv(1024)
+        decode_path = path.decode('ascii')
+
+        response = []
+
+        # Retorna o tamanho do diretorio
+        dir_size = getDirSize(decode_path)
+        response.append(dir_size)
+        
+        # Data de criação do repositorio
+        create_date = os.path.getmtime(path)    
+        response.append(create_date)
+        
+        sendResponse(response)
+    
+    # retornar o PID de um processo
+    if msg.decode('ascii') == '8':
+        process_name = cliente.recv(1024)
+        decode_name = process_name.decode('ascii')
+
+        response = []
+        # Retorna o pid do processo
+        pid = getPIDByName(decode_name)
+        response.append(pid[0])        
+
+        # Retorna as informações do pid
+        process_info = getProcessInformation(int(pid[0]))
+        response.append(process_info)
+
+        sendResponse(response)
+    
+    # Retorna as informações da rede em que a maquina se encontra
+    if msg.decode('ascii') == '9':
+        interfaces = ps.net_if_addrs()
+        sendResponse(interfaces)
 
 
 
