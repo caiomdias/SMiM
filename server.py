@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-
-
-## Problemas:
-## Tem que configurar na opção 5, "get IP" a rede certa para pegar o IP
+# Problemas:
+# Tem que configurar na opção 5, "get IP" a rede certa para pegar o IP
 
 # Servidor
-import socket, pickle, cpuinfo
+import socket
+import pickle
+import cpuinfo
 import psutil as ps
 import os
 
@@ -58,16 +58,17 @@ def getCpuInfo(info):
     print(temp)
     return temp
 
+
 def sendResponse(res):
     # Verifica se a resposta ja é uma lista.
     if type(res) is list:
-         # Prepara a lista para o envio
+        # Prepara a lista para o envio
         bytes_resp = pickle.dumps(res)
 
         # Envia os dados
         cliente.send(bytes_resp)
 
-    else: 
+    else:
         # Gera a lista de resposta
         resposta = []
         print(res)
@@ -79,6 +80,7 @@ def sendResponse(res):
 
         # Envia os dados
         cliente.send(bytes_resp)
+
 
 while True:
     res = []
@@ -95,7 +97,6 @@ while True:
         res = []
         res = getMemoryUsagePercent()
         sendResponse(res)
-        
 
     # Percentual de uso da CPU
     if msg.decode('ascii') == '2':
@@ -103,16 +104,14 @@ while True:
         for i in range(0, ps.cpu_count()):
             temp = getCpuUsagePercent(i)
             res.append(temp)
-        
-        sendResponse(res)
 
+        sendResponse(res)
 
     # Percentual de uso de Disco
     if msg.decode('ascii') == '3':
-        res = []  
-        res = ps.disk_usage('.')      
+        res = []
+        res = ps.disk_usage('.')
         sendResponse(res.percent)
-
 
     # Informações da CPU
     if msg.decode('ascii') == '4':
@@ -120,7 +119,6 @@ while True:
         info = cpuinfo.get_cpu_info()
         res = getCpuInfo(info)
         sendResponse(res)
-    
 
     # Ip da maquina
     if msg.decode('ascii') == '5':
@@ -129,13 +127,21 @@ while True:
         machine_ip = dic_interfaces['Ethernet'][1].address
         sendResponse(machine_ip)
 
+    if msg.decode('ascii') == '6':
+        # dic_interfaces = ps.net_if_addrs()
+        # sendResponse(machine_ip)
+        # espera o path do arquivo
+        # envia um ack ou sei lá
+        path = cliente.recv(1024)
+        decode_path = path.decode('ascii')
+        print(decode_path)
+
+        # retornar as informações do arquivo
+
     if os.path.isfile(msg.decode('ascii')):
         msg = msg.decode('ascii')
         print(msg)
 
-    
-        
- 
 
 # Fecha socket do servidor e cliente
 socket_servidor.close()
