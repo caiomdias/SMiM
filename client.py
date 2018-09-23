@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# problemas:
-# De aguma maneira a resposta nao esta sendo atualizada para
-# vazio depois que o servidor responde
-
-
 import socket
 import pickle
 import os
@@ -13,7 +8,7 @@ import psutil as ps
 
 GIGAFACTOR = float(1 << 30)
 
-
+# Formata as informações de percentual de uso da CPU e as apresenta.
 def formatCpuInfoPercent(res):
     c = 1
 
@@ -22,7 +17,7 @@ def formatCpuInfoPercent(res):
         c += 1
 
 
-# Informações de CPU
+# Formata as informações de CPU e as apresenta.
 def formatCpuInfo(info):
     print('\n'+'\t'+"Informações da CPU da sua maquina:")
     print('\t'+"Nome / modelo:", info[0])
@@ -34,7 +29,9 @@ def formatCpuInfo(info):
     print('\t'+"Numero de nucleos físicos:", info[6])
     print('\t'+"Numero de nucleos lógicos:", info[7], ''+'\n')
 
-def getFileInformation(path, list_files):
+
+# Formata as informações de uma lista de arquivos
+def formatFileInformation(path, list_files):
 
     dic_files = {}
 
@@ -104,14 +101,14 @@ def formatProcessInformation(pid, current_process):
 
 # Formata as informações de redes
 def formatNetworkInformation(interfaces):
-    nomes = []
+    names = []
 
     # Obtém os nomes das interfaces primeiro
     for i in interfaces:
-        nomes.append(str(i))
+        names.append(str(i))
 
     # Depois, imprimir os valores:
-    for i in nomes:
+    for i in names:
         print('\n'+i+":")
 
         for j in interfaces[i]:
@@ -122,7 +119,6 @@ def formatNetworkInformation(interfaces):
 
 # Cria o socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-temp = 0
 
 try:
     # Tenta se conectar ao servidor
@@ -235,7 +231,7 @@ try:
             # Converte os bytes para lista
             res_files = pickle.loads(bytes)
 
-            getFileInformation(path, res_files)
+            formatFileInformation(path, res_files)
 
         
         # Retorna as informações de um diretorio com base no path.
@@ -286,7 +282,7 @@ try:
 
 
 except Exception as erro:
-    print(str(erro))
+    print('\n'+str(erro)+'\n')
 
 # Fecha o socket
 s.close()

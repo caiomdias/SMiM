@@ -90,8 +90,6 @@ def getPIDByName(name):
             lista_pid.append(str(i))
 
     if len(lista_pid) > 0:
-        # print("O(s) PID(s) de", name, "são:")
-        # print(', '.join(lista_pid))
         return lista_pid
 
     else:
@@ -128,7 +126,6 @@ def sendResponse(res):
 
 
 while True:
-    res = []
     # Recebe pedido do cliente:
     msg = cliente.recv(2048)
 
@@ -152,7 +149,6 @@ while True:
 
         sendResponse(res)
 
-
     # Percentual de uso de Disco
     if msg.decode('ascii') == '3':
         res = []
@@ -169,7 +165,6 @@ while True:
     # Ip da maquina
     if msg.decode('ascii') == '5':
         dic_interfaces = ps.net_if_addrs()
-        print(dic_interfaces)
         machine_ip = dic_interfaces['Ethernet'][1].address
         sendResponse(machine_ip)
 
@@ -178,10 +173,9 @@ while True:
         path = cliente.recv(1024)
         decode_path = path.decode('ascii')
         list_files = os.listdir(decode_path)
-        print(decode_path)
         sendResponse(list_files)
 
-    # retornar as informações do arquivo
+    # retornar as informações de um diretorio
     if msg.decode('ascii') == '7':
         path = cliente.recv(1024)
         decode_path = path.decode('ascii')
@@ -221,5 +215,5 @@ while True:
 
 
 
-# Fecha socket do servidor e cliente
+# Fecha socket do servidor
 socket_servidor.close()
